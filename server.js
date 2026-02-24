@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 // Mettez votre vraie clé SECRÈTE Stripe ci-dessous
-const stripe = require('stripe')('sk_test_51T1UWCDDj1CnxBJAiuFXd5lhDiDJdNjCWN9XLYVzc23fLgJuIHDSr4fQZcvUVl6ffqBoEdm55Ijw6hqrI2FDwIKV00AiHbL4qw');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 
