@@ -7,7 +7,7 @@ const app = express();
 
 // 1. Autoriser UNIQUEMENT votre site Infomaniak (règle le problème de CORS)
 app.use(cors({
-    origin: 'https://www.bmstudio.ch'
+    origin: ['https://www.bmstudio.ch', 'https://bmstudio.ch']
 }));
 
 // 2. Permettre de lire les données envoyées par votre site
