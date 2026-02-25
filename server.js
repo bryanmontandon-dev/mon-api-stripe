@@ -6,7 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const app = express();
 
 app.use(cors({
-    origin: ['https://www.bmstudio.ch', 'https://bmstudio.ch']
+    origin: ['https://www.bmstudio.ch', 'https://bmstudio.ch','https://www.montandon-watches.ch', 'https://montandon-watches.ch']
 }));
 
 app.use(express.json());
