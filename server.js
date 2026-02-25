@@ -45,8 +45,8 @@ app.post('/creer-session-paiement', async (req, res) => {
                 quantity: 1,
             }],
             mode: 'payment',
-            success_url: 'https://www.bmstudio.ch/succes.html',
-            cancel_url: 'https://www.bmstudio.ch/annulation.html',
+            success_url: 'https://www.montandon-watches.ch/succes.html',
+            cancel_url: 'https://www.montandon-watches.ch/annulation.html',
         });
         
         res.json({ url: session.url });
