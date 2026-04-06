@@ -47,7 +47,7 @@ app.post('/creer-session-paiement', async (req, res) => {
                 quantity: 1,
             }],
             mode: 'payment',
-            success_url: 'https://www.bormand.ch/succes.html',
+            success_url: 'https://www.bormand.ch/succes.html?ref=' + encodeURIComponent(req.body.reference || '') + '&amount=' + (req.body.amount || 0) + '&email=' + encodeURIComponent(req.body.email || '') + '&name=' + encodeURIComponent(req.body.name || ''),
             cancel_url: 'https://www.bormand.ch/annulation.html',
         });
 
