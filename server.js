@@ -19,9 +19,9 @@ const paymentLimiter = rateLimit({
     message: { error: 'Trop de requetes. Veuillez patienter.' }
 });
 
-// --- Montant minimum (en centimes CHF) ---
-const MIN_AMOUNT = 10000; // 100 CHF minimum
-const MAX_AMOUNT = 10000000; // 100'000 CHF maximum
+// --- Montant minimum  ---
+const MIN_AMOUNT = 10000; 
+const MAX_AMOUNT = 10000000; 
 
 app.post('/creer-session-paiement', paymentLimiter, async (req, res) => {
     try {
