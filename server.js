@@ -72,6 +72,7 @@ app.post('/creer-session-paiement', paymentLimiter, async (req, res) => {
                 quantity: 1,
             }],
             mode: 'payment',
+            allow_promotion_codes: true,
             // PII retire de l'URL — email/nom passes via sessionStorage cote client
             success_url: 'https://www.bormand.ch/succes.html?ref=' + encodeURIComponent(sanitizedRef) + '&amount=' + amount,
             cancel_url: 'https://www.bormand.ch/annulation.html?ref=' + encodeURIComponent(sanitizedRef),
