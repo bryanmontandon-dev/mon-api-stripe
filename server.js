@@ -19,9 +19,9 @@ const paymentLimiter = rateLimit({
     message: { error: 'Trop de requetes. Veuillez patienter.' }
 });
 
-// --- Montant minimum  ---
-const MIN_AMOUNT = 10000; 
-const MAX_AMOUNT = 10000000; 
+// --- Montant minimum (en centimes CHF) ---
+const MIN_AMOUNT = 10000; // 100 CHF minimum
+const MAX_AMOUNT = 10000000; // 100'000 CHF maximum
 
 app.post('/creer-session-paiement', paymentLimiter, async (req, res) => {
     try {
@@ -74,7 +74,7 @@ app.post('/creer-session-paiement', paymentLimiter, async (req, res) => {
             mode: 'payment',
             // PII retire de l'URL — email/nom passes via sessionStorage cote client
             success_url: 'https://www.bormand.ch/succes.html?ref=' + encodeURIComponent(sanitizedRef) + '&amount=' + amount,
-            cancel_url: 'https://www.bormand.ch/annulation.html',
+            cancel_url: 'https://www.bormand.ch/annulation.html?ref=' + encodeURIComponent(sanitizedRef),
         });
 
         res.json({ url: session.url });
