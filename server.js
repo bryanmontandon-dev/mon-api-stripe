@@ -20,7 +20,7 @@ const paymentLimiter = rateLimit({
 });
 
 // --- Montant minimum (en centimes CHF) ---
-const MIN_AMOUNT = 10000; // 100 CHF minimum
+const MIN_AMOUNT = 1000; // 10 CHF minimum
 const MAX_AMOUNT = 10000000; // 100'000 CHF maximum
 
 app.post('/creer-session-paiement', paymentLimiter, async (req, res) => {
