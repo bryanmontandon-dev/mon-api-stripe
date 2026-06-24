@@ -120,9 +120,19 @@ app.post('/verifier-recaptcha', recaptchaLimiter, async (req, res) => {
         );
         const data = await response.json();
 
-        if (!data.tokenProperties || !data.tokenProperties.valid) {
-            return res.json({ valid: false, reason: (data.tokenProperties && data.tokenProperties.invalidReason) || 'invalide' });
+        // Mode "surveillance" temporaire : tant que l'integration n'est pas confirmee fiable,
+        // on ne bloque JAMAIS un client sur une reponse anormale de Google (cle mal configuree,
+        // erreur API, etc.) - on logue tout pour analyse, sans jamais empecher une vraie connexion.
+        if (!data.tokenProperties) {
+            console.error('reCAPTCHA - reponse Google inattendue (pas de tokenProperties):', JSON.stringify(data));
+            return res.json({ valid: true, score: null, note: 'reponse google inattendue - voir logs' });
         }
+        if (!data.tokenProperties.valid) {
+            console.warn('reCAPTCHA - token invalide:', data.tokenProperties.invalidReason, '| action recue:', action);
+            return res.json({ valid: true, score: null, note: 'token invalide (' + data.tokenProperties.invalidReason + ') - voir logs' });
+        }
+
+        console.log('reCAPTCHA - score:', data.riskAnalysis ? data.riskAnalysis.score : 'aucun', '| action:', action);
 
         res.json({ valid: true, score: data.riskAnalysis ? data.riskAnalysis.score : null });
     } catch (error) {
