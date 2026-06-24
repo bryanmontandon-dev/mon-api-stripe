@@ -86,5 +86,51 @@ app.post('/creer-session-paiement', paymentLimiter, async (req, res) => {
     }
 });
 
+// --- VERIFICATION RECAPTCHA ENTERPRISE (score anti-robot, connexion/inscription client) ---
+const RECAPTCHA_PROJECT_ID = 'watches-2e49f'; // meme projet que Firebase
+const RECAPTCHA_SITE_KEY = '6Lc6mDAtAAAAAD2DJ-m2O_zH-MjTQcdzQsQoF0Ma';
+const RECAPTCHA_API_KEY = process.env.RECAPTCHA_API_KEY; // a definir sur Render
+
+const recaptchaLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    message: { error: 'Trop de requetes. Veuillez patienter.' }
+});
+
+app.post('/verifier-recaptcha', recaptchaLimiter, async (req, res) => {
+    try {
+        const { token, action } = req.body;
+        if (!token || typeof token !== 'string') {
+            return res.status(400).json({ valid: false, error: 'Token manquant.' });
+        }
+        if (!RECAPTCHA_API_KEY) {
+            // Cle pas encore configuree sur Render : on ne bloque pas un vrai client
+            return res.json({ valid: true, score: null, note: 'recaptcha non configure' });
+        }
+
+        const response = await fetch(
+            `https://recaptchaenterprise.googleapis.com/v1/projects/${RECAPTCHA_PROJECT_ID}/assessments?key=${RECAPTCHA_API_KEY}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    event: { token, siteKey: RECAPTCHA_SITE_KEY, expectedAction: action || undefined }
+                })
+            }
+        );
+        const data = await response.json();
+
+        if (!data.tokenProperties || !data.tokenProperties.valid) {
+            return res.json({ valid: false, reason: (data.tokenProperties && data.tokenProperties.invalidReason) || 'invalide' });
+        }
+
+        res.json({ valid: true, score: data.riskAnalysis ? data.riskAnalysis.score : null });
+    } catch (error) {
+        console.error('Erreur reCAPTCHA:', error.message);
+        // Fail-open : une erreur reseau ne doit jamais bloquer un vrai client
+        res.json({ valid: true, score: null, note: 'erreur verification' });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log('Serveur pret sur le port ' + PORT));
